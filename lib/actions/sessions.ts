@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { createSessionSchema, type CreateSessionInput } from "@/lib/validators/session";
@@ -65,7 +65,6 @@ export async function createSession(
     action: "created",
   });
 
-  revalidateTag("sessions");
   revalidatePath("/dashboard/sessions");
 
   return { success: true, message: "Session created.", sessionId: newSession.id };
@@ -118,7 +117,6 @@ export async function joinSession(sessionId: string): Promise<ActionResult> {
     { userId: session.user.id }
   );
 
-  revalidateTag("sessions");
   revalidatePath(`/dashboard/sessions/${sessionId}`);
 
   return { success: true, message: "You have joined the session." };
@@ -175,7 +173,6 @@ export async function completeSession(sessionId: string): Promise<ActionResult> 
     });
   }
 
-  revalidateTag("sessions");
   revalidatePath(`/dashboard/sessions/${sessionId}`);
 
   return { success: true, message: "Session marked as completed." };
@@ -199,7 +196,6 @@ export async function cancelSession(sessionId: string): Promise<ActionResult> {
     data: { status: "CANCELLED" },
   });
 
-  revalidateTag("sessions");
   revalidatePath("/dashboard/sessions");
 
   return { success: true, message: "Session cancelled." };

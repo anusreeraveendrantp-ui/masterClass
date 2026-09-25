@@ -28,7 +28,7 @@ export async function POST(req: Request) {
 
   const parsed = requestSchema.safeParse(body);
   if (!parsed.success) {
-    return new Response(parsed.error.errors[0].message, { status: 422 });
+    return new Response(parsed.error.issues[0].message, { status: 422 });
   }
 
   const { sessionId, notes } = parsed.data;
@@ -65,7 +65,7 @@ ${notes}`;
   const result = streamText({
     model: groq("llama-3.3-70b-versatile"),
     prompt,
-    maxTokens: 1500,
+    maxOutputTokens: 1500,
     temperature: 0.4,
     onFinish: async ({ text }) => {
       // Persist the generated content
@@ -85,5 +85,5 @@ ${notes}`;
     },
   });
 
-  return result.toDataStreamResponse();
+  return result.toTextStreamResponse();
 }

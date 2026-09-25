@@ -9,7 +9,7 @@ import type { Role } from "@/lib/actions/rbac";
 /** List all users — ADMIN only */
 export async function listUsers() {
   const { error } = await requireRole("ADMIN");
-  if (error) return { success: false as const, error: error.error, users: [] };
+  if (error) return { success: false as const, error: !error.success ? error.error : "Unauthorized", users: [] };
 
   const users = await db.user.findMany({
     select: {

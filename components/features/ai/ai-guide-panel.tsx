@@ -35,30 +35,17 @@ export function AIGuidePanel({ sessionId, existingGuide }: AIGuidePanelProps) {
         throw new Error(msg || `Request failed with status ${res.status}`);
       }
 
-      // Parse the AI SDK data stream format: lines prefixed with "0:"
+      // Plain text stream from toTextStreamResponse()
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
       if (!reader) throw new Error("No response body");
 
-      let buffer = "";
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-        for (const line of lines) {
-          if (line.startsWith("0:")) {
-            try {
-              const text = JSON.parse(line.slice(2));
-              setCompletion((prev) => prev + text);
-            } catch {
-              // skip malformed chunks
-            }
-          }
-        }
-      }
-    } catch (err) {
+        const chunk = decoder.decode(value, { stream: true });
+        setCompletion((prev) => prev + chunk);
+      }    } catch (err) {
       setError(err instanceof Error ? err : new Error("Something went wrong"));
     } finally {
       setIsLoading(false);
