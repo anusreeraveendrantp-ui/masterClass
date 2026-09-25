@@ -92,7 +92,6 @@ export function SessionDetail({ session, currentUserId, isHost, isParticipant }:
 
         <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-gray-500">
           <p>
-            📅{" "}
             {new Date(session.startTime).toLocaleDateString("en", {
               weekday: "long",
               month: "long",
@@ -100,7 +99,6 @@ export function SessionDetail({ session, currentUserId, isHost, isParticipant }:
             })}
           </p>
           <p>
-            ⏰{" "}
             {new Date(session.startTime).toLocaleTimeString("en", {
               hour: "2-digit",
               minute: "2-digit",
@@ -111,10 +109,8 @@ export function SessionDetail({ session, currentUserId, isHost, isParticipant }:
               minute: "2-digit",
             })}
           </p>
-          {session.location && <p>📍 {session.location}</p>}
-          <p>
-            👥 {session.participants.length}/{session.maxCapacity} participants
-          </p>
+          {session.location && <p>{session.location}</p>}
+          <p>{session.participants.length}/{session.maxCapacity} participants</p>
         </div>
 
         {msg && (
@@ -167,7 +163,7 @@ export function SessionDetail({ session, currentUserId, isHost, isParticipant }:
                     )}
                   </p>
                   <p className={`text-xs ${color}`}>
-                    ⭐ {user.trustScore.toFixed(0)} · {pStatus}
+                    {user.trustScore.toFixed(0)} · {pStatus}
                   </p>
                 </div>
                 {canRate && <RateButton onRate={(score) => handleRate(user.id, score)} />}

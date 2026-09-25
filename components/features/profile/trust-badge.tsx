@@ -27,7 +27,7 @@ export function TrustBadge({ score, size = "md" }: TrustBadgeProps) {
         title={`Trust score: ${score}`}
         aria-label={`Trust score: ${score} — ${label}`}
       >
-        ⭐ {score.toFixed(0)}
+        {score.toFixed(0)}
       </span>
     );
   }

@@ -6,11 +6,11 @@ import { signOut } from "next-auth/react";
 import type { Session } from "next-auth";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: "🏠" },
-  { href: "/dashboard/matches", label: "Matches", icon: "🎯" },
-  { href: "/dashboard/sessions", label: "Sessions", icon: "📅" },
-  { href: "/dashboard/courses", label: "Courses", icon: "📚" },
-  { href: "/dashboard/profile", label: "Profile", icon: "👤" },
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/dashboard/matches", label: "Matches" },
+  { href: "/dashboard/sessions", label: "Sessions" },
+  { href: "/dashboard/courses", label: "Courses" },
+  { href: "/dashboard/profile", label: "Profile" },
 ];
 
 interface SidebarProps {
@@ -19,17 +19,22 @@ interface SidebarProps {
 
 export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
+  const isAdmin = user?.role === "ADMIN";
+
+  const navItems = isAdmin
+    ? [...NAV_ITEMS, { href: "/dashboard/admin", label: "Admin" }]
+    : NAV_ITEMS;
 
   return (
     <aside className="w-56 bg-white border-r border-gray-100 flex flex-col">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-gray-100">
-        <span className="text-xl font-bold text-indigo-600">StudySync</span>
+        <span className="text-xl font-bold text-indigo-600">MasterClass</span>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1" aria-label="Main navigation">
-        {NAV_ITEMS.map(({ href, label, icon }) => {
+        {navItems.map(({ href, label }) => {
           const active =
             href === "/dashboard"
               ? pathname === "/dashboard"
@@ -38,14 +43,13 @@ export function Sidebar({ user }: SidebarProps) {
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 active
                   ? "bg-indigo-50 text-indigo-700"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
               }`}
               aria-current={active ? "page" : undefined}
             >
-              <span aria-hidden="true">{icon}</span>
               {label}
             </Link>
           );
@@ -60,9 +64,8 @@ export function Sidebar({ user }: SidebarProps) {
         </div>
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          className="w-full flex items-center px-3 py-2.5 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
         >
-          <span aria-hidden="true">🚪</span>
           Sign Out
         </button>
       </div>

@@ -7,9 +7,9 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "StudySync — AI-Matched Peer Study Network",
+  title: "MasterClass",
   description:
-    "Find compatible study partners, schedule sessions, and boost your academic performance with AI-generated study guides.",
+    "Find compatible study partners, schedule sessions, and boost your academic performance with ease.",
 };
 
 export default function RootLayout({

@@ -1,10 +1,20 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-const db = new PrismaClient();
+const connectionString = process.env.DATABASE_URL!;
+
+const adapter = new PrismaPg({
+  connectionString,
+});
+
+const db = new PrismaClient({
+  adapter,
+});
+
 
 async function main() {
-  console.log("🌱 Seeding database…");
+  console.log(" Seeding database…");
 
   // Courses
   const courses = await Promise.all([
@@ -117,7 +127,7 @@ async function main() {
   });
 
   console.log("✓ Created sample session");
-  console.log("\n✅ Seed complete!");
+  console.log("\n Seed complete!");
 }
 
 main()

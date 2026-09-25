@@ -39,7 +39,10 @@ export function CreateSessionButton({ courses }: { courses: Course[] }) {
       maxCapacity: Number(form.maxCapacity),
     });
     if (!parsed.success) {
-      setError(parsed.error.errors[0].message);
+      const flat = parsed.error.flatten();
+      const firstField = Object.values(flat.fieldErrors).flat()[0];
+      const firstForm = flat.formErrors[0];
+      setError(firstField ?? firstForm ?? "Please check the form and try again.");
       return;
     }
 
@@ -87,7 +90,6 @@ export function CreateSessionButton({ courses }: { courses: Course[] }) {
 
             {courses.length === 0 ? (
               <div className="py-6 text-center space-y-3">
-                <p className="text-4xl">📚</p>
                 <p className="text-sm font-medium text-gray-700">No courses available yet</p>
                 <p className="text-xs text-gray-400">
                   Ask your admin to add courses, or go to the{" "}

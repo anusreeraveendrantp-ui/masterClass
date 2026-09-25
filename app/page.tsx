@@ -5,7 +5,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
-        <span className="text-2xl font-bold text-indigo-600">StudySync</span>
+        <span className="text-2xl font-bold text-indigo-600">MasterClass</span>
         <div className="flex gap-4">
           <Link
             href="/login"
@@ -24,17 +24,14 @@ export default function HomePage() {
 
       {/* Hero */}
       <section className="text-center py-24 px-6 max-w-4xl mx-auto">
-        <span className="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide">
-          AI-Powered Study Network
-        </span>
+       
         <h1 className="text-5xl font-extrabold text-gray-900 leading-tight mb-6">
           Find your perfect{" "}
           <span className="text-indigo-600">study partner</span> in seconds
         </h1>
         <p className="text-xl text-gray-500 mb-10 max-w-2xl mx-auto">
-          StudySync matches you with compatible peers based on your courses,
-          schedule, and learning style — then helps you prepare with AI-generated
-          study guides.
+        MasterClass matches you with compatible peers based on your courses,
+          schedule, and learning style.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
@@ -69,11 +66,11 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 py-8 text-center text-sm text-gray-400">
+      <footer className="border-t border-blue-200 py-8 text-center text-sm text-blue-600 font-bold">
         <p>
-          Built for House of Edtech · Assignment Sep 2026.1 ·{" "}
+          ANUSREE RAVEENDRAN TP ·{" "}
           <a
-            href="https://github.com"
+            href="https://github.com/anusreeraveendrantp-ui/masterClass"
             target="_blank"
             rel="noopener noreferrer"
             className="underline hover:text-indigo-600"
@@ -82,7 +79,8 @@ export default function HomePage() {
           </a>{" "}
           ·{" "}
           <a
-            href="https://linkedin.com"
+          href="https://www.linkedin.com/in/anusree-raveendran-t-p-610814173/"
+            
             target="_blank"
             rel="noopener noreferrer"
             className="underline hover:text-indigo-600"

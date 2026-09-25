@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useCompletion } from "ai/react";
 
 interface AIGuidePanelProps {
   sessionId: string;
@@ -11,17 +10,59 @@ interface AIGuidePanelProps {
 export function AIGuidePanel({ sessionId, existingGuide }: AIGuidePanelProps) {
   const [notes, setNotes] = useState("");
   const [showExisting, setShowExisting] = useState(!!existingGuide);
-
-  const { completion, complete, isLoading, error } = useCompletion({
-    api: "/api/ai/study-guide",
-    body: { sessionId, notes },
-  });
+  const [completion, setCompletion] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
     if (!notes.trim() || notes.length < 50) return;
+
     setShowExisting(false);
-    await complete(notes);
+    setCompletion("");
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("/api/ai/study-guide", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, notes }),
+      });
+
+      if (!res.ok) {
+        const msg = await res.text();
+        throw new Error(msg || `Request failed with status ${res.status}`);
+      }
+
+      // Parse the AI SDK data stream format: lines prefixed with "0:"
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      if (!reader) throw new Error("No response body");
+
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (line.startsWith("0:")) {
+            try {
+              const text = JSON.parse(line.slice(2));
+              setCompletion((prev) => prev + text);
+            } catch {
+              // skip malformed chunks
+            }
+          }
+        }
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Something went wrong"));
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const displayContent = completion || (showExisting ? existingGuide : null);
@@ -32,9 +73,8 @@ export function AIGuidePanel({ sessionId, existingGuide }: AIGuidePanelProps) {
       aria-labelledby="ai-guide-heading"
     >
       <div className="flex items-center gap-2 mb-4">
-        <span aria-hidden="true" className="text-2xl">🤖</span>
         <h2 id="ai-guide-heading" className="font-semibold text-gray-900">
-          AI Study Guide Generator
+          Study Guide Generator
         </h2>
       </div>
 

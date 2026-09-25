@@ -25,7 +25,7 @@ export function MatchCard({ match, sharedCourses }: MatchCardProps) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-gray-900 truncate">{user.name}</p>
-          <p className={`text-sm ${color}`}>⭐ {user.trustScore.toFixed(0)} · {label}</p>
+          <p className={`text-sm ${color}`}>{user.trustScore.toFixed(0)} · {label}</p>
         </div>
         <div className="text-center">
           <p className="text-2xl font-extrabold text-indigo-600">{score}</p>

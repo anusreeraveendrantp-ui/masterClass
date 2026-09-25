@@ -78,7 +78,6 @@ export function SessionCard({ session, currentUserId, isParticipant }: SessionCa
       {/* Time */}
       <div className="text-sm text-gray-500">
         <p>
-          📅{" "}
           {new Date(session.startTime).toLocaleDateString("en", {
             weekday: "short",
             month: "short",
@@ -95,7 +94,7 @@ export function SessionCard({ session, currentUserId, isParticipant }: SessionCa
             minute: "2-digit",
           })}
         </p>
-        {session.location && <p className="truncate">📍 {session.location}</p>}
+        {session.location && <p className="truncate">{session.location}</p>}
       </div>
 
       {/* Host */}
@@ -104,7 +103,7 @@ export function SessionCard({ session, currentUserId, isParticipant }: SessionCa
           {session.host.name?.[0]?.toUpperCase()}
         </div>
         <span className="text-gray-600">{session.host.name}</span>
-        <span className={`text-xs ${color}`}>⭐ {session.host.trustScore.toFixed(0)}</span>
+        <span className={`text-xs ${color}`}>{session.host.trustScore.toFixed(0)}</span>
       </div>
 
       {/* Capacity */}
