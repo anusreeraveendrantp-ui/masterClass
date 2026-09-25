@@ -1,0 +1,195 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  ORGANIZER
+  ADMIN
+}
+
+enum SessionStatus {
+  UPCOMING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum ParticipantStatus {
+  JOINED
+  ATTENDED
+  NO_SHOW
+  CANCELLED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  role          Role      @default(STUDENT)
+  trustScore    Float     @default(50.0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Auth.js relations
+  accounts      Account[]
+  sessions      AuthSession[]
+
+  // App relations
+  enrollments       Enrollment[]
+  hostedSessions    StudySession[]   @relation("HostedSessions")
+  participations    Participant[]
+  ratingsGiven      Rating[]         @relation("RatingsGiven")
+  ratingsReceived   Rating[]         @relation("RatingsReceived")
+  studyGuides       StudyGuide[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model AuthSession {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("auth_sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Course {
+  id           String       @id @default(cuid())
+  name         String
+  code         String       @unique
+  department   String
+  createdAt    DateTime     @default(now())
+
+  enrollments  Enrollment[]
+  sessions     StudySession[]
+
+  @@map("courses")
+}
+
+model Enrollment {
+  id           String   @id @default(cuid())
+  userId       String
+  courseId     String
+  availability Json     @default("[]") // Array of time slots: [{day: "MON", start: "09:00", end: "11:00"}]
+  createdAt    DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+model StudySession {
+  id           String        @id @default(cuid())
+  courseId     String
+  hostId       String
+  title        String
+  description  String?
+  startTime    DateTime
+  endTime      DateTime
+  location     String?       // physical location or meeting link
+  maxCapacity  Int           @default(10)
+  status       SessionStatus @default(UPCOMING)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  course        Course        @relation(fields: [courseId], references: [id])
+  host          User          @relation("HostedSessions", fields: [hostId], references: [id])
+  participants  Participant[]
+  ratings       Rating[]
+  studyGuide    StudyGuide?
+
+  @@map("study_sessions")
+}
+
+model Participant {
+  id          String            @id @default(cuid())
+  sessionId   String
+  userId      String
+  status      ParticipantStatus @default(JOINED)
+  ratingGiven Boolean           @default(false)
+  joinedAt    DateTime          @default(now())
+
+  session StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+  @@map("participants")
+}
+
+model Rating {
+  id        String   @id @default(cuid())
+  sessionId String
+  raterId   String
+  rateeId   String
+  score     Int      // 1-5
+  comment   String?
+  createdAt DateTime @default(now())
+
+  session StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  rater   User         @relation("RatingsGiven", fields: [raterId], references: [id])
+  ratee   User         @relation("RatingsReceived", fields: [rateeId], references: [id])
+
+  @@unique([sessionId, raterId, rateeId])
+  @@map("ratings")
+}
+
+model StudyGuide {
+  id                 String   @id @default(cuid())
+  sessionId          String   @unique
+  userId             String
+  sourceNotes        String   @db.Text
+  aiGeneratedContent String?  @db.Text
+  quizQuestions      Json?    // Array of {question, options, answer}
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  session StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User         @relation(fields: [userId], references: [id])
+
+  @@map("study_guides")
+}
