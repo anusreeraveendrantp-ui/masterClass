@@ -19,7 +19,7 @@ export async function updateProfile(
 
   const parsed = updateProfileSchema.safeParse(input);
   if (!parsed.success) {
-    return { success: false, error: parsed.error.errors[0].message };
+    return { success: false, error: parsed.error.issues[0].message };
   }
 
   await db.user.update({
@@ -40,7 +40,7 @@ export async function enrollInCourse(
 
   const parsed = enrollmentSchema.safeParse(input);
   if (!parsed.success) {
-    return { success: false, error: parsed.error.errors[0].message };
+    return { success: false, error: parsed.error.issues[0].message };
   }
 
   const { courseId, availability } = parsed.data;

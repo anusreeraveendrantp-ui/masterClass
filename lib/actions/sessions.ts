@@ -17,7 +17,7 @@ export async function createSession(
 
   const parsed = createSessionSchema.safeParse(input);
   if (!parsed.success) {
-    return { success: false, error: parsed.error.errors[0].message };
+    return { success: false, error: parsed.error.issues[0].message };
   }
 
   const { courseId, title, description, startTime, endTime, location, maxCapacity } =

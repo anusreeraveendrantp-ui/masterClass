@@ -8,6 +8,8 @@ import { loginSchema } from "@/lib/validators/auth";
 import { authConfig } from "@/auth.config";
 
 
+import type { Role } from "@/types/next-auth";
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
@@ -21,7 +23,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as { role?: string }).role ?? "STUDENT";
+        token.role = ((user as { role?: string }).role ?? "STUDENT") as Role;
         token.trustScore = (user as { trustScore?: number }).trustScore ?? 50;
       }
       return token;
@@ -29,7 +31,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
-        session.user.role = token.role as string;
+        session.user.role = token.role as Role;
         session.user.trustScore = token.trustScore as number;
       }
       return session;

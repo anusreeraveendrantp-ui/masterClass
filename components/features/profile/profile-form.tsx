@@ -20,7 +20,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
     const parsed = updateProfileSchema.safeParse({ name, image });
     if (!parsed.success) {
-      setStatus({ ok: false, msg: parsed.error.errors[0].message });
+      setStatus({ ok: false, msg: parsed.error.issues[0].message });
       return;
     }
 
